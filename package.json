@@ -1,0 +1,25 @@
+{
+  "name": "easy-company-api",
+  "version": "1.0.0",
+  "description": "This project is for creating a backend api for simple inventory system.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KarizmaCompany/easy-company-api.git"
+  },
+  "author": "Husam Burhan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KarizmaCompany/easy-company-api/issues"
+  },
+  "homepage": "https://github.com/KarizmaCompany/easy-company-api#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.2",
+    "mysql": "^2.18.1"
+  }
+}
