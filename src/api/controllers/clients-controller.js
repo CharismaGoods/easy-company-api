@@ -2,7 +2,7 @@ const res = require('express/lib/response');
 const pool = require('../helpers/db');
 const { replaceUndefined } = require('../helpers/utilities');
 
-const executeCommand = async (sql, kind, cb) => {
+const executeCommand = async (sql, values, kind, cb) => {
     try {
         pool.getConnection(function (err, conn) {            
             if (err) {
@@ -16,7 +16,7 @@ const executeCommand = async (sql, kind, cb) => {
                 }
             }
             else {                
-                conn.query(sql, function (err, results) {
+                conn.query(sql, values, function (err, results) {
                     if (err) {
                         if (err.errno) {
                             conn.release();
@@ -63,18 +63,22 @@ const getClients = async (req, res) => {
     const { full_name } = req.query;
     let sql = '';
 
+    let values = [];
+
     if (full_name) {
         sql = `SELECT * 
                 FROM clients 
-                WHERE full_name LIKE '%${full_name}%'
+                WHERE full_name LIKE '%?%'
                 ORDER BY 'full_name';`;
+        
+        values.push(full_name);
     }
     else {
         sql = `SELECT * 
                 FROM clients`;
     }
 
-    await executeCommand(sql, 'select', (result) => {
+    await executeCommand(sql,values, 'select', (result) => {
         if(result.success === 'no'){
             res.status(result.status_no).json(result.msg);
         }
@@ -90,9 +94,10 @@ const getClientById = async (req, res) => {
     if (id) {
         const sql = `SELECT * 
                         FROM clients 
-                        WHERE id = ${id}`;
+                        WHERE id =?`;
+        const values = [id];
 
-        await executeCommand(sql, 'select', (result) => {
+        await executeCommand(sql, values, 'select', (result) => {
             if(result.success === 'no'){
                 res.status(result.status_no).json(result.msg);
             }
@@ -111,7 +116,7 @@ const addClient = async (req, res) => {
     let { full_name, email,
         website, tel,
         mobile,
-        note, street,
+        note, street, house_no,
         city, country, zip,
         company_name, vat_no,
         is_wholesaler, kind } = req.body;
@@ -127,13 +132,15 @@ const addClient = async (req, res) => {
             is_wholesaler = 0;
         }
 
-        //replace 'undefined' with empty string.
+        //replace 'undefined' with empty standard-string.
+        full_name = replaceUndefined(full_name);
         email = replaceUndefined(email);
         website = replaceUndefined(website);
         tel = replaceUndefined(tel);
         mobile = replaceUndefined(mobile);
         note = replaceUndefined(note);
         street = replaceUndefined(street);
+        house_no = replaceUndefined(house_no);
         city = replaceUndefined(city);
         country = replaceUndefined(country);
         zip = replaceUndefined(zip);
@@ -143,25 +150,20 @@ const addClient = async (req, res) => {
 
         const sql = `INSERT INTO clients(full_name, email, 
                                                         website, tel, 
-                                                        mobile, note, street, 
-                                                        city, country, zip
+                                                        mobile, note, street, house_no,
+                                                        city, country, zip,
                                                         company_name, vat_no,
                                                         is_wholesaler, kind)
-                            VALUES ('${full_name}','${email}',
-                                        '${website}','${tel}',
-                                        '${mobile}',
-                                        '${note}','${street}',
-                                        '${city}','${country}', '${zip}',
-                                        '${company_name}','${vat_no}',
-                                        ${is_wholesaler}, '${kind}')`;
+                            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`;
+
+        const values = [full_name, email, website, tel, mobile, note, street, house_no, city,country, zip,company_name,vat_no,is_wholesaler,kind];
         
-        await executeCommand(sql, 'insert',(result) => {            
-            if(result.success === 'no'){
+        await executeCommand(sql, values, 'insert', (result) => {            
+            if(result.success === 'no'){                
                 res.status(result.status_no).json(result.msg);
             }
             else{
-                console.log(result)
-                res.json(result.id);
+                res.json(result)
             }            
         });
     }
