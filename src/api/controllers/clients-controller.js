@@ -1,6 +1,63 @@
-const mysql = require('mysql');
-const dbConnection = require('../helpers/db');
+const res = require('express/lib/response');
+const pool = require('../helpers/db');
 const { replaceUndefined } = require('../helpers/utilities');
+
+const executeCommand = async (sql, kind, cb) => {
+    try {
+        pool.getConnection(function (err, conn) {
+            if (err) {
+                if (err.errno) {
+                    conn.release();
+                    cb({ success: 'no', msg: `${err.errno - err.sqlMessage}` });
+                }
+                else {
+                    conn.release();
+                    cb({ success: 'no', msg: `${err}` });
+                }
+            }
+            else {
+                conn.query(sql, function (err, results) {
+                    if (err) {
+                        if (err.errno) {
+                            conn.release();
+                            cb({ success: 'no', msg: `${err.errno - err.sqlMessage}` });
+                        }
+                        else {
+                            conn.release();
+                            cb({ success: 'no', msg: `${err}` });
+                        }
+                    }
+                    else {
+                        if (kind === 'insert') {
+                            conn.release();
+                            cb({ success: 'yes', id: results.insertId });
+                        }
+                        else if (kind === 'update') {
+                            conn.release();
+                            cb({ success: 'no', msg: 'not implemented yet.' });
+                        }
+                        else {
+                            conn.release();
+                            if(results.length == 1){
+                                cb({ success: 'yes', data: results[0] });
+                            }
+                            else if(results.length > 1){
+                                cb({ success: 'yes', data: results });
+                            }
+                            else{
+                                cb({ success: 'no', msg: 'not found' });
+                            }
+                        }
+
+                    }
+                })
+            }
+        })
+    }
+    catch (err) {
+        cb({ success: 'no', msg: err });
+    }
+}
 
 const getClients = async (req, res) => {
     const { full_name } = req.query;
@@ -17,19 +74,9 @@ const getClients = async (req, res) => {
                 FROM clients`;
     }
 
-    try {
-        await dbConnection.query(sql, (err, results, fields) => {
-            if (err) {
-                res.json({ success: 'no', msg: `${err.errno - err.sqlMessage}` });
-            }
-            else {
-                res.send(results);
-            }
-        });
-    }
-    catch (err) {
-        res.json({ success: 'no', msg: `MySQL - Internal Error` });
-    }
+    await executeCommand(sql, 'select', (result) => {
+        res.json(result);
+    });
 }
 
 const getClientById = async (req, res) => {
@@ -40,22 +87,12 @@ const getClientById = async (req, res) => {
                         FROM clients 
                         WHERE id = ${id}`;
 
-        try {
-            await dbConnection.query(sql, (err, results, fields) => {
-                if (err) {
-                    res.json({ success: 'no', msg: `${err.errno - err.sqlMessage}` });
-                }
-                else {
-                    res.send(results);
-                }
-            });
-        }
-        catch (err) {
-            res.json({ success: 'no', msg: `MySQL - Internal Error` });
-        }
+        await executeCommand(sql, 'select', (result) => {
+            res.json(result);
+        });
     }
     else {
-        res.sendStatus(404);
+        res.Status(404).json({});
     }
 }
 
@@ -108,26 +145,9 @@ const addClient = async (req, res) => {
                                         '${company_name}','${vat_no}',
                                         ${is_wholesaler})`;
 
-        try {
-            await dbConnection.query(sql, (err, results, fields) => {
-                if (err) {
-                    //if errno === 1062 this means a duplication entry is happened.
-                    if (err.errno === 1062) {
-                        res.json({ success: 'no', msg: `${err.errno} - ${err.sqlMessage}` });
-                    }
-                    else {
-                        res.json({ success: 'no', msg: err });
-                    }
-
-                }
-                else {
-                    res.json({ success: 'yes', id: results.insertId });
-                }
-            });
-        }
-        catch (err) {
-            res.json({ success: 'no', msg: `MySQL - Internal Error` });
-        }
+        await executeCommand(sql, 'insert', (result) => {
+            res.json(result);
+        });
     }
     else {
         res.json({ success: 'no', msg: 'missing fields: full_name and/or is_wholesaler' });
