@@ -6,7 +6,12 @@ class Category {
         this.name = name;
     }
 
-    static getCategoryById = async (id) => {
+    /**
+     * 
+     * @param {int} id 
+     * @returns A category with specified 'id', or null.
+     */
+    static getById = async (id) => {
         try {
             const sql = `SELECT * 
                         FROM categories 
@@ -27,7 +32,12 @@ class Category {
         }
     }
 
-    static getCategories = async (name) => {
+    /**
+     * 
+     * @param {stirng} name 
+     * @returns All categories (in case of missing the 'name' parameter), matched categories accourding to 'name' parameter, or null.
+     */
+    static getByName = async (name) => {
         let sql = '';
         let values = [];
 
@@ -59,7 +69,12 @@ class Category {
         }
     }
 
-    static addCategory = async (name) => {
+    /**
+     * 
+     * @param {stirng} name 
+     * @returns the id of inserted category.
+     */
+    static add = async (name) => {
         const sql = `INSERT INTO categories(name)
                             VALUES (?)`;
 
@@ -75,7 +90,13 @@ class Category {
         }      
     }
 
-    static updateCategory = async (id, name) => {
+    /**
+     * 
+     * @param {int} id
+     * @param {stirng} name 
+     * @returns the id of the affected category.
+     */
+    static update = async (id, name) => {
         const sql = `UPDATE categories 
                         SET name = ?                                    
                         WHERE id = ?`;

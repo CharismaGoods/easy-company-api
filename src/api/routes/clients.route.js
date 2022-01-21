@@ -1,4 +1,4 @@
-const {getClients, getClientById, addClient, updateClient} = require('../controllers/clients-controller');
+const {getClients, getClientById, addClient, updateClient} = require('../controllers/clients.controller');
 const express = require('express');
 const router = express.Router();
 
