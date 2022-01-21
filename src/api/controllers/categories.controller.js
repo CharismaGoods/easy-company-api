@@ -6,7 +6,7 @@ const getCategories = async (req, res) => {
     const { name } = req.query;
 
     try {
-        let categories = await Category.getCategories(name);
+        let categories = await Category.getByName(name);
 
         if (categories === null) {
             res.status(404).json({});
@@ -49,7 +49,7 @@ const getCategoryById = async (req, res) => {
 
     try {
         if (id) {
-            let category = await Category.getCategoryById(id);
+            let category = await Category.getById(id);
             if (category === null) {
                 res.status(404).json({});
             }
@@ -75,10 +75,10 @@ const addCategory = async (req, res) => {
             //replace 'undefined' with empty standard-string.
             name = replaceUndefined(name);
 
-            let result = await Category.addCategory(name);
+            let result = await Category.add(name);
 
             if (result) {
-                res.json({ success: 'yes', id: result });
+                res.status(201).json({ success: 'yes', id: result });
             }
             else {
                 res.status(500).json({ success: 'no', msg: 'Error has occured when insert' });
@@ -102,7 +102,7 @@ const updateCategory = async (req, res) => {
             //replace 'undefined' with empty standard-string.
             name = replaceUndefined(name);
     
-            let result = await Category.updateCategory(id, name);
+            let result = await Category.update(id, name);
     
             if (result) {
                 res.json({ success: 'yes', id: result });

@@ -1,14 +1,17 @@
 const pool = require('../helpers/mysql');
-const SubCategory = require('./SubCategory');
 
 class Category {
     constructor(id, name) {
         this.id = id;
         this.name = name;
-        this.sub_categories = [];
     }
 
-    static getCategoryById = async (id) => {
+    /**
+     * 
+     * @param {int} id 
+     * @returns A category with specified 'id', or null.
+     */
+    static getById = async (id) => {
         try {
             const sql = `SELECT * 
                         FROM categories 
@@ -29,7 +32,12 @@ class Category {
         }
     }
 
-    static getCategories = async (name) => {
+    /**
+     * 
+     * @param {stirng} name 
+     * @returns All categories (in case of missing the 'name' parameter), matched categories accourding to 'name' parameter, or null.
+     */
+    static getByName = async (name) => {
         let sql = '';
         let values = [];
 
@@ -61,33 +69,12 @@ class Category {
         }
     }
 
-    static getSubCategories = async (category_id) => {
-        let sql = '';
-        let values = [];        
-
-        try {
-            sql = `SELECT * 
-                        FROM sub_categories 
-                        WHERE category_id  = ?
-                        ORDER BY name;`;
-
-            values.push(`${category_id}`); 
-
-            let results = await pool.query(sql, values);
-
-            if (results.length > 0) {
-                return results.map(r => new SubCategory(r.id, r.name));
-            }
-            else {
-                return null;
-            }
-        }
-        catch (err) {                   
-            throw err;
-        }
-    }
-
-    static addCategory = async (name) => {
+    /**
+     * 
+     * @param {stirng} name 
+     * @returns the id of inserted category.
+     */
+    static add = async (name) => {
         const sql = `INSERT INTO categories(name)
                             VALUES (?)`;
 
@@ -103,7 +90,13 @@ class Category {
         }      
     }
 
-    static updateCategory = async (id, name) => {
+    /**
+     * 
+     * @param {int} id
+     * @param {stirng} name 
+     * @returns the id of the affected category.
+     */
+    static update = async (id, name) => {
         const sql = `UPDATE categories 
                         SET name = ?                                    
                         WHERE id = ?`;
