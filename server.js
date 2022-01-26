@@ -6,7 +6,7 @@ const bodyParser = require('body-parser')
 const clientsRoute = require('./src/api/routes/clients.route')
 const categoriesRoute = require('./src/api/routes/categories.route')
 const productsRoute = require('./src/api/routes/products.route')
-const priceCategoriesRoute = require('./src/api/routes/priceCategories')
+//const priceCategoriesRoute = require('./src/api/routes/priceCategories')
 const cors = require('cors');
 
 const app = express()
@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({extended:true}))
 app.use('/api/clients', clientsRoute);
 app.use('/api/categories', categoriesRoute);
 app.use('/api/products', productsRoute);
-app.use('/api/price_categories', priceCategoriesRoute);
+//app.use('/api/price_categories', priceCategoriesRoute);
 
 
 app.listen(process.env.PORT || 3000);

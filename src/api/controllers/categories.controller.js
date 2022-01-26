@@ -1,17 +1,25 @@
-const { replaceUndefined } = require('../helpers/utilities');
-const Category = require('../models/Category');
+/**
+ * long description for the file
+ *
+ * @summary short description for the file
+ * @author Husam Burhan
+ *
+ * Created at     : 2022-01-23 00:52:15 
+ * Last modified  : 2022-01-25 20:05:15
+ */
 
+const CategoryRepository = require('../repository/CategoryRepository');
 
 const getCategories = async (req, res) => {
     const { name } = req.query;
 
     try {
-        let categories = await Category.getByName(name);
+        let categories = await CategoryRepository.find(name);
 
         if (categories === null) {
             res.status(404).json({});
         }
-        else if (categories.length == 1) {
+        else if (categories.length === 1) {
             res.json(categories[0]);
         }
         else if (categories.length > 1) {
@@ -19,28 +27,7 @@ const getCategories = async (req, res) => {
         }
     }
     catch (err) {
-        res.status(500).json({ success: 'no', msg: err });
-    }
-}
-
-const getSubCategories = async (req, res) => {
-    const category_id = req.params.category_id;
-    
-    try {
-        let sub_categories = await Category.getSubCategories(category_id);
-
-        if (sub_categories === null) {
-            res.status(404).json({});
-        }
-        else if (sub_categories.length == 1) {
-            res.json(sub_categories[0]);
-        }
-        else if (sub_categories.length > 1) {
-            res.json(sub_categories)
-        }
-    }
-    catch (err) {
-        res.status(500).json({ success: 'no', msg: err });
+        res.status(500).json({ success: 'no', msg: err.sqlMessage });
     }
 }
 
@@ -49,7 +36,7 @@ const getCategoryById = async (req, res) => {
 
     try {
         if (id) {
-            let category = await Category.getById(id);
+            let category = await CategoryRepository.getById(id, true);
             if (category === null) {
                 res.status(404).json({});
             }
@@ -62,63 +49,79 @@ const getCategoryById = async (req, res) => {
         }
     }
     catch (err) {
-        res.status(500).json({ success: 'no', msg: err });
+        res.status(500).json({ success: 'no', msg: err.sqlMessage });
     }
 }
 
 const addCategory = async (req, res) => {
-    let { name } = req.body;
+    let category = req.category;
 
     try {
-        if (name) {
+        let result = await CategoryRepository.add(category);
 
-            //replace 'undefined' with empty standard-string.
-            name = replaceUndefined(name);
-
-            let result = await Category.add(name);
-
-            if (result) {
-                res.status(201).json({ success: 'yes', id: result });
-            }
-            else {
-                res.status(500).json({ success: 'no', msg: 'Error has occured when insert' });
-            }
+        if (result) {
+            res.status(201).json({ success: 'yes', id: result });
         }
         else {
-            res.status(422).json({ success: 'no', msg: 'missing field(s): name' });
+            res.status(500).json({ success: 'no', msg: 'Error has occured when insert' });
         }
     }
     catch (err) {
-        res.status(500).json({ success: 'no', msg: err });
+        let err_msg = '';
+
+        if (err.errno) {
+            if (err.errno === 1062) {
+                //value duplication
+                err_msg = 'The name you specified is duplicated'
+            }
+            else {
+                err_msg = err.sqlMessage;
+            }
+        }
+        else {
+            err_msg = err.sqlMessage;
+        }
+
+        res.status(500).json({ success: 'no', msg: err_msg });
     }
 }
 
 
 const updateCategory = async (req, res) => {
-    let { id, name } = req.body;
+    const category = req.category;
 
-    try{
-        if (name && id) {
-            //replace 'undefined' with empty standard-string.
-            name = replaceUndefined(name);
-    
-            let result = await Category.update(id, name);
-    
-            if (result) {
-                res.json({ success: 'yes', id: result });
-            }
-            else {
-                res.status(500).json({ success: 'no', msg: 'Error has occured when update' });
-            }
-    
+    try {
+        let result = await CategoryRepository.update(category);
+
+        if (result) {
+            res.json({ success: 'yes', id: result });
         }
         else {
-            res.status(422).json({ success: 'no', msg: 'missing field(s): name and/or id' });
+            res.status(500).json({ success: 'no', msg: 'Error has occured when update' });
         }
     }
-    catch(err){        
-        res.status(500).json({ success: 'no', msg: err });
+    catch (err) {
+        let err_msg = '';
+
+        if (err.errno) {
+            if (err.errno === 1452) {
+                //Forign-key violation
+                err_msg = 'The parent category you specified is not found'
+            }
+            else if(err.errno === 1062){
+                //value duplication
+                err_msg = 'The name you specified is duplicated'
+            }
+            else {
+                err_msg = err.sqlMessage;
+            }
+        }
+        else {
+            err_msg = err.sqlMessage;
+        }
+
+        res.status(500).json({ success: 'no', msg: err_msg });
     }
 }
 
-module.exports = { getCategories, getCategoryById, addCategory, updateCategory, getSubCategories };
+module.exports = { getCategories, getCategoryById, addCategory, updateCategory };

@@ -3,16 +3,17 @@
 *
 * @summary short description for the file
 * @author Mohammad
+* @review Husam Burhan
 *
 * Created at     : 2022-01-18 14:34:50 
-* Last modified  : 2022-01-18 14:35:07
+ * Last modified  : 2022-01-23 00:57:36
 */
 
 const pool = require('../helpers/mysql');
-const { getElements, getElementById } = require('./BaseModel');
+//const { getElements, getElementById } = require('./BaseModel');
 const CCategory = require('./ClientsCategory');
 
-class Category {
+class PriceCategory {
     constructor(id, name, price) {
         this.id = id;
         this.name = name;
@@ -74,4 +75,4 @@ class Category {
 
 }
 
-module.exports = Category;
+module.exports = PriceCategory;

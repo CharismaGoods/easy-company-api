@@ -5,11 +5,10 @@
 * @author Mohammad
 *
 * Created at     : 2022-01-18 14:34:50 
-* Last modified  : 2022-01-18 14:35:07
+ * Last modified  : 2022-01-23 00:55:28
 */
 
 const pool = require('../helpers/mysql');
-const { getElements, getElementById } = require('./BaseModel');
 
 class Category {
     constructor(client_id, price_category_id, price) {

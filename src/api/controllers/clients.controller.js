@@ -1,18 +1,26 @@
-//const res = require('express/lib/response');
-//const { executeCommand } = require('../helpers/db');
-const { replaceUndefined } = require('../helpers/utilities');
-const Client = require('../models/Client');
+/**
+ * long description for the file
+ *
+ * @summary short description for the file
+ * @author Husam Burhan
+ *
+ * Created at     : 2022-01-22 22:24:46 
+ * Last modified  : 2022-01-25 19:58:10
+ */
+
+
+const ClientRepository = require('../repository/ClientRepository');
 
 const getClients = async (req, res) => {
     const { full_name } = req.query;
 
     try {
-        let clients = await Client.getClients(full_name);
+        let clients = await ClientRepository.find(full_name);
 
         if (clients === null) {
             res.status(404).json({});
         }
-        else if (clients.length == 1) {
+        else if (clients.length === 1) {
             res.json(clients[0]);
         }
         else if (clients.length > 1) {
@@ -20,7 +28,7 @@ const getClients = async (req, res) => {
         }
     }
     catch (err) {
-        res.status(500).json({ success: 'no', msg: err });
+        res.status(500).json({ success: 'no', msg: err.sqlMessage });
     }
 }
 
@@ -29,7 +37,7 @@ const getClientById = async (req, res) => {
 
     try {
         if (id) {
-            let client = await Client.getClientById(id);
+            let client = await ClientRepository.getById(id);
             if (client === null) {
                 res.status(404).json({});
             }
@@ -42,130 +50,51 @@ const getClientById = async (req, res) => {
         }
     }
     catch (err) {
-        res.status(500).json({ success: 'no', msg: err });
+        res.status(500).json({ success: 'no', msg: err.sqlMessage });
     }
 }
 
 
 const addClient = async (req, res) => {
-    let { full_name, email,
-        website, tel,
-        mobile,
-        note, street, house_no,
-        city, country, zip,
-        company_name, vat_no,
-        is_wholesaler, kind } = req.body;
+    let client = req.client;
 
     try {
-        //check if is_wholesaler is a number or not.
-        if (isNaN(is_wholesaler)) {
-            res.status(422).json({ success: 'no', msg: 'is_wholesaler should be 1 or 0.' });
-            return;
+        let result = await ClientRepository.add(client);
+
+        if (result) {
+            res.status(201).json({ success: 'yes', id: result });
+        }
+        else {
+            res.status(500).json({ success: 'no', msg: 'Error has occured when insert' });
         }
 
-        if ((full_name && is_wholesaler) || is_wholesaler === 0) {
-            if (is_wholesaler === true ||
-                is_wholesaler === "true" ||
-                is_wholesaler === "1" ||
-                is_wholesaler === 1) {
-                is_wholesaler = 1;
+    }
+    catch (err) {
+        let err_msg = '';
+
+        if (err.errno) {
+            if (err.errno === 1062) {
+                //value duplication
+                err_msg = 'The name you specified is duplicated'
             }
             else {
-                is_wholesaler = 0;
-            }
-
-            //replace 'undefined' with empty standard-string.
-            full_name = replaceUndefined(full_name);
-            email = replaceUndefined(email);
-            website = replaceUndefined(website);
-            tel = replaceUndefined(tel);
-            mobile = replaceUndefined(mobile);
-            note = replaceUndefined(note);
-            street = replaceUndefined(street);
-            house_no = replaceUndefined(house_no);
-            city = replaceUndefined(city);
-            country = replaceUndefined(country);
-            zip = replaceUndefined(zip);
-            company_name = replaceUndefined(company_name);
-            vat_no = replaceUndefined(vat_no);
-            kind = replaceUndefined(kind);
-
-            let result = await Client.addClient(full_name, email,
-                website, tel,
-                mobile, note,
-                street, house_no,
-                city, country,
-                zip, company_name,
-                vat_no, is_wholesaler,
-                kind);
-
-            if (result) {
-                res.json({ success: 'yes', id: result });
-            }
-            else {
-                res.status(500).json({ success: 'no', msg: 'Error has occured when insert' });
+                err_msg = err.sqlMessage;
             }
         }
         else {
-            res.status(422).json({ success: 'no', msg: 'missing fields: full_name and/or is_wholesaler' });
+            err_msg = err.sqlMessage;
         }
-    }
-    catch (err) {
 
+        res.status(500).json({ success: 'no', msg: err_msg });
     }
 }
 
 
 const updateClient = async (req, res) => {
-    let { id, full_name, email,
-        website, tel,
-        mobile,
-        note, street, house_no,
-        city, country, zip,
-        company_name, vat_no,
-        is_wholesaler, kind } = req.body;
+    let client = req.client;
 
-    //check if is_wholesaler is a number or not.
-    if (isNaN(is_wholesaler)) {
-        res.status(400).json({ success: 'no', msg: 'is_wholesaler should be 1 or 0.' });
-        return;
-    }
-
-    if ((full_name && is_wholesaler) || is_wholesaler === 0) {
-        if (is_wholesaler === true ||
-            is_wholesaler === "true" ||
-            is_wholesaler === "1" ||
-            is_wholesaler === 1) {
-            is_wholesaler = 1;
-        }
-        else {
-            is_wholesaler = 0;
-        }
-
-        //replace 'undefined' with empty standard-string.
-        full_name = replaceUndefined(full_name);
-        email = replaceUndefined(email);
-        website = replaceUndefined(website);
-        tel = replaceUndefined(tel);
-        mobile = replaceUndefined(mobile);
-        note = replaceUndefined(note);
-        street = replaceUndefined(street);
-        house_no = replaceUndefined(house_no);
-        city = replaceUndefined(city);
-        country = replaceUndefined(country);
-        zip = replaceUndefined(zip);
-        company_name = replaceUndefined(company_name);
-        vat_no = replaceUndefined(vat_no);
-        kind = replaceUndefined(kind);
-
-        let result = await Client.updateClient(id, full_name, email,
-            website, tel,
-            mobile, note,
-            street, house_no,
-            city, country,
-            zip, company_name,
-            vat_no, is_wholesaler,
-            kind);
+    try {
+        let result = await ClientRepository.update(client);
 
         if (result) {
             res.json({ success: 'yes', id: result });
@@ -174,8 +103,27 @@ const updateClient = async (req, res) => {
             res.status(500).json({ success: 'no', msg: 'Error has occured when update' });
         }
     }
-    else {
-        res.status(422).json({ success: 'no', msg: 'missing fields: full_name and/or is_wholesaler' });
+    catch (err) {
+        let err_msg = '';
+
+        if (err.errno) {
+            /*if (err.errno === 1452) {
+                //Forign-key violation
+                err_msg = 'The parent category you specified is not found'
+            }
+            else*/ if(err.errno === 1062){
+                //value duplication
+                err_msg = 'The email you specified is duplicated'
+            }
+            else {
+                err_msg = err.sqlMessage;
+            }
+        }
+        else {
+            err_msg = err.sqlMessage;
+        }
+
+        res.status(500).json({ success: 'no', msg: err_msg });
     }
 }
 

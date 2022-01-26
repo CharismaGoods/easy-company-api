@@ -1,4 +1,4 @@
-const {getCategories, getCategoryById, addCategory, updateCategory, getSubCategories} = require('../controllers/priceCategories');
+const {getCategories, getCategoryById, addCategory, updateCategory, getSubCategories} = require('../controllers/pricecategories.controller');
 const express = require('express');
 const router = express.Router();
 
