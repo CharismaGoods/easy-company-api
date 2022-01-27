@@ -1,36 +1,19 @@
-const { replaceUndefined } = require('../helpers/utilities');
+const PCategoryRepository = require('../repository/PCategoryRepository');
 
-const { getElements, getElementById } = require('./baseController');
-const Category = require('../models/PriceCategory');
-
-const getCategories = async (req, res) => {
-    getElements(req, res, Category.getCategories);
-}
-
-const getCategoryById = async (req, res) => {
-    getElementById(req, res, Category.getCategoryById);
-}
-
-const addCategory = async (req, res) => {
-    let { name,  price} = req.body;
+const getPriceCategories = async (req, res) => {
+    const { name } = req.query;
 
     try {
-        if (name && price) {
-            //replace 'undefined' with empty standard-string.
-            name = replaceUndefined(name);
-            price = replaceUndefined(price);
+        let pcategories = await PCategoryRepository.find(name);
 
-            let result = await Category.addCategory(name, price);
-
-            if (result) {
-                res.json({ success: 'yes', id: result });
-            }
-            else {
-                res.status(500).json({ success: 'no', msg: 'Error has occured when insert' });
-            }
+        if (pcategories === null) {
+            res.status(404).json({});
         }
-        else {
-            res.status(422).json({ success: 'no', msg: 'missing field(s): name and/or price' });
+        else if (pcategories.length === 1) {
+            res.json(pcategories[0]);
+        }
+        else if (pcategories.length > 1) {
+            res.json(pcategories)
         }
     }
     catch (err) {
@@ -38,30 +21,93 @@ const addCategory = async (req, res) => {
     }
 }
 
-const updateCategory = async (req, res) => {
-    let { id, name, price } = req.body;
+const getPriceCategoryById = async (req, res) => {
+    const id = req.params.id;
 
-    try{
-        if (id && name && price) {
-            //replace 'undefined' with empty standard-string.
-            name = replaceUndefined(name);
-            price = replaceUndefined(price);
-    
-            let result = await Category.updateCategory(id, name, price);
-            if (result) {
-                res.json({ success: 'yes', id: result });
+    try {
+        if (id) {
+            let pcategory = await PCategoryRepository.getById(id);
+            if (pcategory === null) {
+                res.status(404).json({});
             }
             else {
-                res.status(500).json({ success: 'no', msg: 'Error has occured when update' });
+                res.json(pcategory);
             }
         }
         else {
-            res.status(422).json({ success: 'no', msg: 'missing field(s): name and/or id and/or price' });
+            res.status(404).json({});
         }
     }
-    catch(err){        
-        res.status(500).json({ success: 'no', msg: err });
+    catch (err) {
+        res.status(500).json({ success: 'no', msg: err.sqlMessage });
     }
 }
 
-module.exports = { getCategories, getCategoryById, addCategory, updateCategory };
+const addPriceCategory = async (req, res) => {
+    let pcategory = req.pcategory;
+
+    try {
+        let result = await PCategoryRepository.add(pcategory);
+
+        if (result) {
+            res.status(201).json({ success: 'yes', id: result });
+        }
+        else {
+            res.status(500).json({ success: 'no', msg: 'Error has occured when insert' });
+        }
+
+    }
+    catch (err) {
+        let err_msg = '';
+
+        if (err.errno) {
+            if (err.errno === 1062) {
+                //value duplication
+                err_msg = 'The name you specified is duplicated'
+            }
+            else {
+                err_msg = err.sqlMessage;
+            }
+        }
+        else {
+            err_msg = err.sqlMessage;
+        }
+
+        res.status(500).json({ success: 'no', msg: err_msg });
+    }
+}
+
+const updatePriceCategory = async (req, res) => {
+    let pcategory = req.pcategory;
+
+    try {
+        let result = await PCategoryRepository.update(pcategory);
+
+        if (result) {
+            res.json({ success: 'yes', id: result });
+        }
+        else {
+            res.status(500).json({ success: 'no', msg: 'Error has occured when update' });
+        }
+    }
+    catch (err) {
+        let err_msg = '';
+
+        if (err.errno) {
+            if (err.errno === 1062) {
+                //value duplication
+                err_msg = 'The name you specified is duplicated'
+            }
+            else {
+                err_msg = err.sqlMessage;
+            }
+        }
+        else {
+            err_msg = err.sqlMessage;
+        }
+
+        res.status(500).json({ success: 'no', msg: err_msg });
+    }
+}
+
+module.exports = { getPriceCategories, getPriceCategoryById, addPriceCategory, updatePriceCategory };

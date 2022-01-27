@@ -1,12 +1,14 @@
-const {getCategories, getCategoryById, addCategory, updateCategory, getSubCategories} = require('../controllers/pricecategories.controller');
+const {validateUpdatePCategory, validateAddPCategory} = require('../validators/pricecategories.validator');
+const {getPriceCategories, getPriceCategoryById, addPriceCategory, updatePriceCategory} = require('../controllers/pricecategories.controller');
+
 const express = require('express');
 const router = express.Router();
 
 
-router.route('/').get(getCategories).post(addCategory).put(updateCategory);
-
-// router.get('/:category_id/subcategories', getSubCategories);
-router.get('/:id', getCategoryById);
+router.get('/', getPriceCategories);
+router.post('/',validateAddPCategory, addPriceCategory);
+router.put('/', validateUpdatePCategory, updatePriceCategory);
+router.get('/:id', getPriceCategoryById);
 
 
 
