@@ -173,5 +173,61 @@ const updateProduct = async (req, res) => {
     }
 }
 
+const assignPCategoryToProduct = async (req, res) => {
+    const id = req.params.id;
+    const pcategory_id = req.params.pcategory_id;
+   
+    try {
+        if (id && pcategory_id) {
+            let result = await ProductRepository.assignPCategory(id, pcategory_id);
 
-module.exports = { getProducts, getProductById, addProduct, updateProduct, getPriceCategories, getPriceCategoriesOfClient };
+            if (result || result === 0) {
+                res.json({ success: 'yes', msg: 'assignment succeeded' });
+            }
+            else {
+                res.status(500).json({ success: 'no', msg: 'could not assign this product with the specified price category.' });
+            }
+        }
+        else {
+            res.status(404).json({});
+        }
+    }
+    catch (err) {
+        res.status(500).json({ success: 'no', msg: err.sqlMessage });
+    }
+}
+
+const unassignPCategoryFromProduct = async (req, res) => {
+    const id = req.params.id;
+    const pcategory_id = req.params.pcategory_id;
+   
+    try {
+        if (id && pcategory_id) {
+            let result = await ProductRepository.unassignPCategory(id, pcategory_id);
+
+            if (result) {
+                res.json({ success: 'yes', msg: 'unassignment succeeded' });
+            }
+            else {
+                res.status(500).json({ success: 'no', msg: 'could not unassing this product from the specified price category.' });
+            }
+        }
+        else {
+            res.status(404).json({});
+        }
+    }
+    catch (err) {
+        res.status(500).json({ success: 'no', msg: err.sqlMessage });
+    }
+}
+
+module.exports = {
+    getProducts,
+    getProductById,
+    addProduct,
+    updateProduct,
+    getPriceCategories,
+    getPriceCategoriesOfClient,
+    assignPCategoryToProduct,
+    unassignPCategoryFromProduct
+};

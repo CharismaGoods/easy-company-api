@@ -18,7 +18,9 @@ class ProductRepository extends BaseRepository {
         try {
             let flated = flatObject(product);
 
-            return await super.update('products', flated);
+            let tmp =  await super.update('products', flated);
+            console.log(tmp);
+            return tmp;
         }
         catch (err) {
             throw err;
@@ -64,7 +66,7 @@ class ProductRepository extends BaseRepository {
      * Description: This method is used to get a list of product's prices according to the price categories.
      */
     static getProductPriceCategories = async (product_id) => {
-        
+
         try {
             let sql = `SELECT  
                             products.name AS product_name,
@@ -134,8 +136,35 @@ class ProductRepository extends BaseRepository {
         }
     }
 
-    static addToPriceCategory = async (id, price_category_id) => {
+    static assignPCategory = async (id, pcategory_id) => {
+        try {
+            let flated = flatObject({product_id: id, price_category_id: pcategory_id});
 
+            return await super.add('products_price_categories', flated);
+        }
+        catch (err) {
+            throw err;
+        }
+    }
+
+    static unassignPCategory = async (id, pcategory_id) => {
+        try {
+            let sql = `DELETE FROM products_price_categories WHERE product_id =? AND price_category_id = ?`;
+
+            let values = [id, pcategory_id];
+
+            let result = await pool.query(sql, values);
+            
+            if (result.affectedRows > 0) {                
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch (err) {
+            throw err;
+        }
     }
 }
 

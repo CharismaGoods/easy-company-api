@@ -85,7 +85,7 @@ class BaseRepository {
         try {
             let result = await pool.query(sql, values);
 
-            if (result.affectedRows == 1) {
+            if (result.affectedRows == 1) {                
                 return result.insertId;
             }
             else {
@@ -123,6 +123,23 @@ class BaseRepository {
             }
         }
         catch (err) {
+            throw err;
+        }
+    }
+
+    static del = async(sTable, sColumn, id ) => {
+        let sql = '';
+        let values = [];
+
+        try {
+            sql = `DELETE FROM ${sTable} WHERE ${sColumn} =?`;
+            values = [id];
+
+            console.log(sql)
+            let results = await pool.query(sql, values);
+
+            return results.affectedRows;           
+        } catch (err) {
             throw err;
         }
     }
