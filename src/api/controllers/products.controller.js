@@ -185,7 +185,7 @@ const assignPCategoryToProduct = async (req, res) => {
                 res.json({ success: 'yes', msg: 'assignment succeeded' });
             }
             else {
-                res.status(500).json({ success: 'no', msg: 'could not assign this product with the specified price category.' });
+                res.status(500).json({ success: 'no', msg: 'could not assign this product to the specified price category.' });
             }
         }
         else {

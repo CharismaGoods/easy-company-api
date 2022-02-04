@@ -95,47 +95,6 @@ class ProductRepository extends BaseRepository {
         }
     }
 
-
-    /**
-    * 
-    * @param {int} id : the product id
-    * @param {int} client_id : the client id
-    * 
-    * Description: This method is used to get a list of product's prices according to the client prices.
-    */
-     static getProductPriceCategoriesOfClient = async (product_id, client_id) => {
-        try {
-            let sql = `SELECT clients.full_name AS client_full_name, 
-                            products.name AS product_name,
-                            cpc.price AS client_price_category, 
-                            pc.id AS price_category_id,
-                            pc.name AS price_category_name, 
-                            pc.price AS price_category_price,
-                            'client_price' AS pricing_type
-                        FROM clients
-                        INNER JOIN clients_price_categories AS cpc ON clients.id = cpc.client_id
-                        INNER JOIN price_categories AS pc ON cpc.price_category_id = pc.id
-                        INNER JOIN products_price_categories AS ppc ON ppc.price_category_id = pc.id
-                        INNER JOIN products ON ppc.product_id = products.id
-                        WHERE products.id = ? AND clients.id = ?;`;
-
-            let values = [product_id, client_id];
-
-            let results = await pool.query(sql, values);
-
-            if (results.length > 0) {
-                //this means that there are specific price(s) for the client_id of this product_id
-                return results;
-            }
-            else {
-                return null;
-            }
-        }
-        catch (err) {
-            throw err;
-        }
-    }
-
     static assignPCategory = async (id, pcategory_id) => {
         try {
             let flated = flatObject({product_id: id, price_category_id: pcategory_id});

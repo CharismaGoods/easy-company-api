@@ -83,6 +83,37 @@ class CategoryRepository extends BaseRepository {
             throw err;
         }
     }
+
+    static assignPCategory = async (id, pcategory_id) => {
+        try {
+            let flated = flatObject({client_id: id, price_category_id: pcategory_id});
+
+            return await super.add('clients_price_categories', flated);
+        }
+        catch (err) {
+            throw err;
+        }
+    }
+
+    static unassignPCategory = async (id, pcategory_id) => {
+        try {
+            let sql = `DELETE FROM clients_price_categories WHERE client_id =? AND price_category_id = ?`;
+
+            let values = [id, pcategory_id];
+
+            let result = await pool.query(sql, values);
+            
+            if (result.affectedRows > 0) {                
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch (err) {
+            throw err;
+        }
+    }
 }
 
 module.exports = CategoryRepository;

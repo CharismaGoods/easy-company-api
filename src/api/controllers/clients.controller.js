@@ -5,7 +5,7 @@
  * @author Husam Burhan
  *
  * Created at     : 2022-01-22 22:24:46 
- * Last modified  : 2022-01-25 19:58:10
+ * Last modified  : 2022-02-03 13:59:12
  */
 
 
@@ -111,7 +111,7 @@ const updateClient = async (req, res) => {
                 //Forign-key violation
                 err_msg = 'The parent category you specified is not found'
             }
-            else*/ if(err.errno === 1062){
+            else*/ if (err.errno === 1062) {
                 //value duplication
                 err_msg = 'The email you specified is duplicated'
             }
@@ -127,4 +127,86 @@ const updateClient = async (req, res) => {
     }
 }
 
-module.exports = { getClients, getClientById, addClient, updateClient };
+const assignProductPriceToClient = async (req, res) => {
+    const id = req.params.id;
+    const product_id = req.params.product_id;
+    const price = req.params.price;
+
+    try {
+        if (id && product_id && price) {
+            let result = await ClientRepository.assignProductPrice(id, product_id, price);
+
+            if (result || result === 0) {
+                res.json({ success: 'yes', msg: 'assignment succeeded' });
+            }
+            else {
+                res.status(500).json({ success: 'no', msg: 'could not assign this price to the specified client.' });
+            }
+        }
+        else {
+            res.status(404).json({});
+        }
+    }
+    catch (err) {
+        res.status(500).json({ success: 'no', msg: err.sqlMessage });
+    }
+}
+
+const unassignProductPriceFromClient = async (req, res) => {
+    const id = req.params.id;
+    const product_id = req.params.product_id;
+
+    try {
+        if (id && product_id) {
+            let result = await ClientRepository.unassignProductPrice(id, product_id);
+
+            if (result) {
+                res.json({ success: 'yes', msg: 'unassignment succeeded' });
+            }
+            else {
+                res.status(500).json({ success: 'no', msg: 'could not unassing this price from the specified client.' });
+            }
+        }
+        else {
+            res.status(404).json({});
+        }
+    }
+    catch (err) {
+        res.status(500).json({ success: 'no', msg: err.sqlMessage });
+    }
+}
+
+const getProductPriceOfClient = async (req, res) => {
+    const id = req.params.id;
+    const product_id = req.params.product_id;
+
+    try {
+        if (id && product_id) {
+            let result = await ClientRepository.getProductPrice(id, product_id);
+
+            if (result === null) {
+                res.status(404).json({});
+            }
+            else {
+                res.json(result);
+            }
+        }
+        else {
+            res.status(404).json({});
+        }
+    }
+    catch (err) {
+        res.status(500).json({ success: 'no', msg: err.sqlMessage });
+    }
+}
+
+
+module.exports = {
+    getClients,
+    getClientById,
+    addClient,
+    updateClient,
+    getProductPriceOfClient,
+    assignProductPriceToClient,
+    unassignProductPriceFromClient
+};
