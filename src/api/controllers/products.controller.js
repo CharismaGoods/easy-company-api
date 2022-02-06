@@ -1,4 +1,4 @@
-const { getEntityById, getEntities, addEntity } = require('../helpers/utilities');
+const { getEntityById, getEntities, addEntity, updateEntity } = require('../helpers/utilities');
 const ProductRepository = require('../repository/ProductRepository');
 
 const getProducts = async (req, res) => {
@@ -74,79 +74,14 @@ const addProduct = async (req, res) => {
          "1452": "The category you specified is not found" });
 }
 
-/*const addProduct = async (req, res) => {
-    let product = req.product;
-
-    try {
-        let result = await ProductRepository.add(product);
-
-        if (result) {
-            res.status(201).json({ success: 'yes', id: result });
-        }
-        else {
-            res.status(500).json({ success: 'no', msg: 'Error has occured when insert' });
-        }
-
-    }
-    catch (err) {
-        let err_msg = '';
-
-        if (err.errno) {
-            if (err.errno === 1452) {
-                //Forign-key violation
-                err_msg = 'The category you specified is not found'
-            }
-            else if (err.errno === 1062) {
-                //value duplication
-                err_msg = 'The name or sku fields you specified is duplicated'
-            }
-            else {
-                err_msg = err.sqlMessage;
-            }
-        }
-        else {
-            err_msg = err.sqlMessage;
-        }
-
-        res.status(500).json({ success: 'no', msg: err_msg });
-    }
-}*/
-
 const updateProduct = async (req, res) => {
     let product = req.product;
 
-    try {
-        let result = await ProductRepository.update(product);
-
-        if (result) {
-            res.json({ success: 'yes', id: result });
-        }
-        else {
-            res.status(500).json({ success: 'no', msg: 'Error has occured when update' });
-        }
-    }
-    catch (err) {
-        let err_msg = '';
-
-        if (err.errno) {
-            if (err.errno === 1452) {
-                //Forign-key violation
-                err_msg = 'The parent category you specified is not found'
-            }
-            else if (err.errno === 1062) {
-                //value duplication
-                err_msg = 'The name you specified is duplicated'
-            }
-            else {
-                err_msg = err.sqlMessage;
-            }
-        }
-        else {
-            err_msg = err.sqlMessage;
-        }
-
-        res.status(500).json({ success: 'no', msg: err_msg });
-    }
+    return await updateEntity(res,
+        ProductRepository,
+        product,
+        { "1062": "The name or sku fields you specified is duplicated" ,
+         "1452": "The category you specified is not found" });
 }
 
 const assignPCategoryToProduct = async (req, res) => {

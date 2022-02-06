@@ -85,7 +85,7 @@ const validateUpdateClient = (req, res, next) => {
         city, country, zip,
         company_name, vat_no,
         is_wholesaler, kind } = req.body;
-
+        
     try {
         if (typeof id === "undefined") {
             res.status(422).json({ success: 'no', msg: 'id field is missed' });

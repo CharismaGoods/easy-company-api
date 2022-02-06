@@ -50,7 +50,7 @@ async function getEntities(req, res, repository) {
     }
 }
 
-async function addEntity(res, repository, entity, error_msgs){
+async function addEntity(res, repository, entity, error_msgs) {
     try {
         let result = await repository.add(entity);
 
@@ -60,30 +60,56 @@ async function addEntity(res, repository, entity, error_msgs){
         else {
             res.status(500).json({ success: 'no', msg: 'Error has occured when insert' });
         }
-
     }
     catch (err) {
-        let err_msg = '';
-        //console.log(err)
-        if (err.errno) {
-            if (err.errno === 1452) {
-                //Forign-key violation
-                err_msg = error_msgs["1452"]
-            }
-            else if (err.errno === 1062) {
-                //value duplication
-                err_msg = error_msgs["1062"]
-            }
-            else {
-                err_msg = err.sqlMessage;
-            }
-        }
-        else {
-            err_msg = err.sqlMessage;
-        }
-
-        res.status(500).json({ success: 'no', msg: err_msg });
+        addUpdateErrorManipulation(res, err, error_msgs);
     }
 }
 
-module.exports = { replaceUndefined, flatObject, getEntityById, getEntities, addEntity};
+async function updateEntity(res, repository, entity, error_msgs) {
+    try {
+        let result = await repository.update(entity);
+
+        if (result) {
+            res.status(201).json({ success: 'yes', id: result });
+        }
+        else {
+            res.status(500).json({ success: 'no', msg: 'Error has occured when update' });
+        }
+    }
+    catch (err) {
+        addUpdateErrorManipulation(res, err, error_msgs);
+    }
+}
+
+async function addUpdateErrorManipulation(res, errObj, error_msgs) {
+    let err_msg = '';
+    
+    if (errObj.errno) {
+        if (errObj.errno === 1452) {
+            //Forign-key violation
+            err_msg = error_msgs["1452"]
+        }
+        else if (errObj.errno === 1062) {
+            //value duplication
+            err_msg = error_msgs["1062"]
+        }
+        else {
+            err_msg = errObj.sqlMessage;
+        }
+    }
+    else {
+        err_msg = errObj.sqlMessage;
+    }
+
+    res.status(500).json({ success: 'no', msg: err_msg });
+}
+
+module.exports = {
+    replaceUndefined,
+    flatObject,
+    getEntityById,
+    getEntities,
+    addEntity,
+    updateEntity
+};

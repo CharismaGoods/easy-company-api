@@ -134,8 +134,7 @@ class BaseRepository {
         try {
             sql = `DELETE FROM ${sTable} WHERE ${sColumn} =?`;
             values = [id];
-
-            console.log(sql)
+            
             let results = await pool.query(sql, values);
 
             return results.affectedRows;           

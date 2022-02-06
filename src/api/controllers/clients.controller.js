@@ -5,11 +5,11 @@
  * @author Husam Burhan
  *
  * Created at     : 2022-01-22 22:24:46 
- * Last modified  : 2022-02-06 19:12:12
+ * Last modified  : 2022-02-06 23:05:19
  */
 
 
-const { getEntityById, getEntities, addEntity } = require('../helpers/utilities');
+const { getEntityById, getEntities, addEntity, updateEntity } = require('../helpers/utilities');
 const ClientRepository = require('../repository/ClientRepository');
 
 const getClients = async (req, res) => {
@@ -29,76 +29,13 @@ const addClient = async (req, res) => {
         { "1062": "The name or email you specified is duplicated" });
 }
 
-/*const addClient = async (req, res) => {
-    let client = req.client;
-
-    try {
-        let result = await ClientRepository.add(client);
-
-        if (result) {
-            res.status(201).json({ success: 'yes', id: result });
-        }
-        else {
-            res.status(500).json({ success: 'no', msg: 'Error has occured when insert' });
-        }
-
-    }
-    catch (err) {
-        let err_msg = '';
-
-        if (err.errno) {
-            if (err.errno === 1062) {
-                //value duplication
-                err_msg = 'The name you specified is duplicated'
-            }
-            else {
-                err_msg = err.sqlMessage;
-            }
-        }
-        else {
-            err_msg = err.sqlMessage;
-        }
-
-        res.status(500).json({ success: 'no', msg: err_msg });
-    }
-}*/
-
-
 const updateClient = async (req, res) => {
     let client = req.client;
 
-    try {
-        let result = await ClientRepository.update(client);
-
-        if (result) {
-            res.json({ success: 'yes', id: result });
-        }
-        else {
-            res.status(500).json({ success: 'no', msg: 'Error has occured when update' });
-        }
-    }
-    catch (err) {
-        let err_msg = '';
-
-        if (err.errno) {
-            /*if (err.errno === 1452) {
-                //Forign-key violation
-                err_msg = 'The parent category you specified is not found'
-            }
-            else*/ if (err.errno === 1062) {
-                //value duplication
-                err_msg = 'The email you specified is duplicated'
-            }
-            else {
-                err_msg = err.sqlMessage;
-            }
-        }
-        else {
-            err_msg = err.sqlMessage;
-        }
-
-        res.status(500).json({ success: 'no', msg: err_msg });
-    }
+    return await updateEntity(res,
+        ClientRepository,
+        client,
+        { "1062": "The name or email you specified is duplicated" });
 }
 
 const assignProductPriceToClient = async (req, res) => {

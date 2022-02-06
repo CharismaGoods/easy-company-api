@@ -19,7 +19,7 @@ class ProductRepository extends BaseRepository {
             let flated = flatObject(product);
 
             let tmp =  await super.update('products', flated);
-            console.log(tmp);
+    
             return tmp;
         }
         catch (err) {
