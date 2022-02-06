@@ -1,3 +1,4 @@
+const { getEntityById } = require('../helpers/utilities');
 const ProductRepository = require('../repository/ProductRepository');
 
 const getProducts = async (req, res) => {
@@ -22,6 +23,10 @@ const getProducts = async (req, res) => {
 }
 
 const getProductById = async (req, res) => {
+    return await getEntityById(req, res, ProductRepository);
+}
+
+/*const getProductById = async (req, res) => {
     const id = req.params.id;
 
     try {
@@ -41,7 +46,7 @@ const getProductById = async (req, res) => {
     catch (err) {
         res.status(500).json({ success: 'no', msg: err.sqlMessage });
     }
-}
+}*/
 
 const getPriceCategoriesOfClient = async (req, res) => {
     const id = req.params.id;

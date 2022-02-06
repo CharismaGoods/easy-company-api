@@ -5,10 +5,11 @@
  * @author Husam Burhan
  *
  * Created at     : 2022-01-22 22:24:46 
- * Last modified  : 2022-02-03 13:59:12
+ * Last modified  : 2022-02-06 11:39:46
  */
 
 
+const { getEntityById } = require('../helpers/utilities');
 const ClientRepository = require('../repository/ClientRepository');
 
 const getClients = async (req, res) => {
@@ -32,7 +33,11 @@ const getClients = async (req, res) => {
     }
 }
 
-const getClientById = async (req, res) => {
+const getClientById = async(req, res) =>{
+    return await getEntityById(req, res, ClientRepository)
+}
+
+/*const getClientById = async (req, res) => {
     const id = req.params.id;
 
     try {
@@ -52,7 +57,7 @@ const getClientById = async (req, res) => {
     catch (err) {
         res.status(500).json({ success: 'no', msg: err.sqlMessage });
     }
-}
+}*/
 
 
 const addClient = async (req, res) => {

@@ -1,3 +1,4 @@
+const { getEntityById } = require('../helpers/utilities');
 const PCategoryRepository = require('../repository/PCategoryRepository');
 
 const getPriceCategories = async (req, res) => {
@@ -22,6 +23,10 @@ const getPriceCategories = async (req, res) => {
 }
 
 const getPriceCategoryById = async (req, res) => {
+    return await getEntityById(req, res, PCategoryRepository);
+}
+
+/*const getPriceCategoryById = async (req, res) => {
     const id = req.params.id;
 
     try {
@@ -41,7 +46,7 @@ const getPriceCategoryById = async (req, res) => {
     catch (err) {
         res.status(500).json({ success: 'no', msg: err.sqlMessage });
     }
-}
+}*/
 
 const addPriceCategory = async (req, res) => {
     let pcategory = req.pcategory;

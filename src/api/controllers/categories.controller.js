@@ -5,9 +5,10 @@
  * @author Husam Burhan
  *
  * Created at     : 2022-01-23 00:52:15 
- * Last modified  : 2022-01-25 20:05:15
+ * Last modified  : 2022-02-06 11:41:38
  */
 
+const { getEntityById } = require('../helpers/utilities');
 const CategoryRepository = require('../repository/CategoryRepository');
 
 const getCategories = async (req, res) => {
@@ -32,6 +33,10 @@ const getCategories = async (req, res) => {
 }
 
 const getCategoryById = async (req, res) => {
+    return await getEntityById(req, res, CategoryRepository);
+}
+
+/*const getCategoryById = async (req, res) => {
     const id = req.params.id;
 
     try {
@@ -51,7 +56,7 @@ const getCategoryById = async (req, res) => {
     catch (err) {
         res.status(500).json({ success: 'no', msg: err.sqlMessage });
     }
-}
+}*/
 
 const addCategory = async (req, res) => {
     let category = req.category;
