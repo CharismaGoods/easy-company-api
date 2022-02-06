@@ -5,14 +5,18 @@
  * @author Husam Burhan
  *
  * Created at     : 2022-01-22 22:24:46 
- * Last modified  : 2022-02-06 11:39:46
+ * Last modified  : 2022-02-06 16:46:16
  */
 
 
-const { getEntityById } = require('../helpers/utilities');
+const { getEntityById, getEntities } = require('../helpers/utilities');
 const ClientRepository = require('../repository/ClientRepository');
 
 const getClients = async (req, res) => {
+    return await getEntities(req, res, ClientRepository);
+}
+
+/*const getClients = async (req, res) => {
     const { full_name } = req.query;
 
     try {
@@ -31,7 +35,7 @@ const getClients = async (req, res) => {
     catch (err) {
         res.status(500).json({ success: 'no', msg: err.sqlMessage });
     }
-}
+}*/
 
 const getClientById = async(req, res) =>{
     return await getEntityById(req, res, ClientRepository)

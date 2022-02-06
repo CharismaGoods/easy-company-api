@@ -1,7 +1,11 @@
-const { getEntityById } = require('../helpers/utilities');
+const { getEntityById, getEntities } = require('../helpers/utilities');
 const PCategoryRepository = require('../repository/PCategoryRepository');
 
 const getPriceCategories = async (req, res) => {
+    return await getEntities(req, res, PCategoryRepository);
+}
+
+/*const getPriceCategories = async (req, res) => {
     const { name } = req.query;
 
     try {
@@ -20,7 +24,7 @@ const getPriceCategories = async (req, res) => {
     catch (err) {
         res.status(500).json({ success: 'no', msg: err });
     }
-}
+}*/
 
 const getPriceCategoryById = async (req, res) => {
     return await getEntityById(req, res, PCategoryRepository);

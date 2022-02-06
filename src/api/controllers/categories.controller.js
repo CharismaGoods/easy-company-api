@@ -5,13 +5,17 @@
  * @author Husam Burhan
  *
  * Created at     : 2022-01-23 00:52:15 
- * Last modified  : 2022-02-06 11:41:38
+ * Last modified  : 2022-02-06 18:14:34
  */
 
-const { getEntityById } = require('../helpers/utilities');
+const { getEntityById, getEntities } = require('../helpers/utilities');
 const CategoryRepository = require('../repository/CategoryRepository');
 
 const getCategories = async (req, res) => {
+    return await getEntities(req, res, CategoryRepository);
+}
+
+/*const getCategories = async (req, res) => {
     const { name } = req.query;
 
     try {
@@ -30,7 +34,7 @@ const getCategories = async (req, res) => {
     catch (err) {
         res.status(500).json({ success: 'no', msg: err.sqlMessage });
     }
-}
+}*/
 
 const getCategoryById = async (req, res) => {
     return await getEntityById(req, res, CategoryRepository);
@@ -113,7 +117,7 @@ const updateCategory = async (req, res) => {
                 //Forign-key violation
                 err_msg = 'The parent category you specified is not found'
             }
-            else if(err.errno === 1062){
+            else if (err.errno === 1062) {
                 //value duplication
                 err_msg = 'The name you specified is duplicated'
             }

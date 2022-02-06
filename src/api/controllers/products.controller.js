@@ -1,7 +1,11 @@
-const { getEntityById } = require('../helpers/utilities');
+const { getEntityById, getEntities } = require('../helpers/utilities');
 const ProductRepository = require('../repository/ProductRepository');
 
 const getProducts = async (req, res) => {
+    return await getEntities(req, res, ProductRepository);
+}
+
+/*const getProducts = async (req, res) => {
     const { name } = req.query;
 
     try {
@@ -20,7 +24,7 @@ const getProducts = async (req, res) => {
     catch (err) {
         res.status(500).json({ success: 'no', msg: err });
     }
-}
+}*/
 
 const getProductById = async (req, res) => {
     return await getEntityById(req, res, ProductRepository);
