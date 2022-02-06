@@ -1,56 +1,13 @@
-const { getEntityById, getEntities } = require('../helpers/utilities');
+const { getEntityById, getEntities, addEntity } = require('../helpers/utilities');
 const ProductRepository = require('../repository/ProductRepository');
 
 const getProducts = async (req, res) => {
     return await getEntities(req, res, ProductRepository);
 }
 
-/*const getProducts = async (req, res) => {
-    const { name } = req.query;
-
-    try {
-        let products = await ProductRepository.find(name);
-
-        if (products === null) {
-            res.status(404).json({});
-        }
-        else if (products.length === 1) {
-            res.json(products[0]);
-        }
-        else if (products.length > 1) {
-            res.json(products)
-        }
-    }
-    catch (err) {
-        res.status(500).json({ success: 'no', msg: err });
-    }
-}*/
-
 const getProductById = async (req, res) => {
     return await getEntityById(req, res, ProductRepository);
 }
-
-/*const getProductById = async (req, res) => {
-    const id = req.params.id;
-
-    try {
-        if (id) {
-            let product = await ProductRepository.getById(id);
-            if (product === null) {
-                res.status(404).json({});
-            }
-            else {
-                res.json(product);
-            }
-        }
-        else {
-            res.status(404).json({});
-        }
-    }
-    catch (err) {
-        res.status(500).json({ success: 'no', msg: err.sqlMessage });
-    }
-}*/
 
 const getPriceCategoriesOfClient = async (req, res) => {
     const id = req.params.id;
@@ -110,6 +67,16 @@ const getUnlickedProducts = async (req, res) => {
 const addProduct = async (req, res) => {
     let product = req.product;
 
+    return await addEntity(res,
+        ProductRepository,
+        product,
+        { "1062": "The name or sku fields you specified is duplicated" ,
+         "1452": "The category you specified is not found" });
+}
+
+/*const addProduct = async (req, res) => {
+    let product = req.product;
+
     try {
         let result = await ProductRepository.add(product);
 
@@ -143,7 +110,7 @@ const addProduct = async (req, res) => {
 
         res.status(500).json({ success: 'no', msg: err_msg });
     }
-}
+}*/
 
 const updateProduct = async (req, res) => {
     let product = req.product;

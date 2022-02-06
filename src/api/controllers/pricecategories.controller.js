@@ -1,58 +1,24 @@
-const { getEntityById, getEntities } = require('../helpers/utilities');
+const { getEntityById, getEntities, addEntity } = require('../helpers/utilities');
 const PCategoryRepository = require('../repository/PCategoryRepository');
 
 const getPriceCategories = async (req, res) => {
     return await getEntities(req, res, PCategoryRepository);
 }
 
-/*const getPriceCategories = async (req, res) => {
-    const { name } = req.query;
-
-    try {
-        let pcategories = await PCategoryRepository.find(name);
-
-        if (pcategories === null) {
-            res.status(404).json({});
-        }
-        else if (pcategories.length === 1) {
-            res.json(pcategories[0]);
-        }
-        else if (pcategories.length > 1) {
-            res.json(pcategories)
-        }
-    }
-    catch (err) {
-        res.status(500).json({ success: 'no', msg: err });
-    }
-}*/
-
 const getPriceCategoryById = async (req, res) => {
     return await getEntityById(req, res, PCategoryRepository);
 }
 
-/*const getPriceCategoryById = async (req, res) => {
-    const id = req.params.id;
-
-    try {
-        if (id) {
-            let pcategory = await PCategoryRepository.getById(id);
-            if (pcategory === null) {
-                res.status(404).json({});
-            }
-            else {
-                res.json(pcategory);
-            }
-        }
-        else {
-            res.status(404).json({});
-        }
-    }
-    catch (err) {
-        res.status(500).json({ success: 'no', msg: err.sqlMessage });
-    }
-}*/
-
 const addPriceCategory = async (req, res) => {
+    let pcategory = req.pcategory;
+
+    return await addEntity(res,
+        PCategoryRepository,
+        pcategory,
+        { "1062": "TThe name you specified is duplicated" });
+}
+
+/*const addPriceCategory = async (req, res) => {
     let pcategory = req.pcategory;
 
     try {
@@ -84,7 +50,7 @@ const addPriceCategory = async (req, res) => {
 
         res.status(500).json({ success: 'no', msg: err_msg });
     }
-}
+}*/
 
 const updatePriceCategory = async (req, res) => {
     let pcategory = req.pcategory;

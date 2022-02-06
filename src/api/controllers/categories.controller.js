@@ -5,64 +5,31 @@
  * @author Husam Burhan
  *
  * Created at     : 2022-01-23 00:52:15 
- * Last modified  : 2022-02-06 18:14:34
+ * Last modified  : 2022-02-06 19:33:55
  */
 
-const { getEntityById, getEntities } = require('../helpers/utilities');
+const { getEntityById, getEntities, addEntity } = require('../helpers/utilities');
 const CategoryRepository = require('../repository/CategoryRepository');
 
 const getCategories = async (req, res) => {
     return await getEntities(req, res, CategoryRepository);
 }
 
-/*const getCategories = async (req, res) => {
-    const { name } = req.query;
-
-    try {
-        let categories = await CategoryRepository.find(name);
-
-        if (categories === null) {
-            res.status(404).json({});
-        }
-        else if (categories.length === 1) {
-            res.json(categories[0]);
-        }
-        else if (categories.length > 1) {
-            res.json(categories)
-        }
-    }
-    catch (err) {
-        res.status(500).json({ success: 'no', msg: err.sqlMessage });
-    }
-}*/
-
 const getCategoryById = async (req, res) => {
     return await getEntityById(req, res, CategoryRepository);
 }
 
-/*const getCategoryById = async (req, res) => {
-    const id = req.params.id;
-
-    try {
-        if (id) {
-            let category = await CategoryRepository.getById(id, true);
-            if (category === null) {
-                res.status(404).json({});
-            }
-            else {
-                res.json(category);
-            }
-        }
-        else {
-            res.status(404).json({});
-        }
-    }
-    catch (err) {
-        res.status(500).json({ success: 'no', msg: err.sqlMessage });
-    }
-}*/
-
 const addCategory = async (req, res) => {
+    let category = req.category;
+
+    return await addEntity(res,
+        CategoryRepository,
+        category,
+        { "1062": "The name you specified is duplicated",
+          "1452": "The parent category you specified is not found" });
+}
+
+/*const addCategory = async (req, res) => {
     let category = req.category;
 
     try {
@@ -93,7 +60,7 @@ const addCategory = async (req, res) => {
 
         res.status(500).json({ success: 'no', msg: err_msg });
     }
-}
+}*/
 
 
 const updateCategory = async (req, res) => {

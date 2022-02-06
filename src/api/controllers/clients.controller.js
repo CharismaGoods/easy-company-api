@@ -5,66 +5,31 @@
  * @author Husam Burhan
  *
  * Created at     : 2022-01-22 22:24:46 
- * Last modified  : 2022-02-06 16:46:16
+ * Last modified  : 2022-02-06 19:12:12
  */
 
 
-const { getEntityById, getEntities } = require('../helpers/utilities');
+const { getEntityById, getEntities, addEntity } = require('../helpers/utilities');
 const ClientRepository = require('../repository/ClientRepository');
 
 const getClients = async (req, res) => {
     return await getEntities(req, res, ClientRepository);
 }
 
-/*const getClients = async (req, res) => {
-    const { full_name } = req.query;
-
-    try {
-        let clients = await ClientRepository.find(full_name);
-
-        if (clients === null) {
-            res.status(404).json({});
-        }
-        else if (clients.length === 1) {
-            res.json(clients[0]);
-        }
-        else if (clients.length > 1) {
-            res.json(clients)
-        }
-    }
-    catch (err) {
-        res.status(500).json({ success: 'no', msg: err.sqlMessage });
-    }
-}*/
-
-const getClientById = async(req, res) =>{
+const getClientById = async (req, res) => {
     return await getEntityById(req, res, ClientRepository)
 }
 
-/*const getClientById = async (req, res) => {
-    const id = req.params.id;
-
-    try {
-        if (id) {
-            let client = await ClientRepository.getById(id);
-            if (client === null) {
-                res.status(404).json({});
-            }
-            else {
-                res.json(client);
-            }
-        }
-        else {
-            res.status(404).json({});
-        }
-    }
-    catch (err) {
-        res.status(500).json({ success: 'no', msg: err.sqlMessage });
-    }
-}*/
-
-
 const addClient = async (req, res) => {
+    let client = req.client;
+
+    return await addEntity(res,
+        ClientRepository,
+        client,
+        { "1062": "The name or email you specified is duplicated" });
+}
+
+/*const addClient = async (req, res) => {
     let client = req.client;
 
     try {
@@ -96,7 +61,7 @@ const addClient = async (req, res) => {
 
         res.status(500).json({ success: 'no', msg: err_msg });
     }
-}
+}*/
 
 
 const updateClient = async (req, res) => {
