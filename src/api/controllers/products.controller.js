@@ -9,29 +9,6 @@ const getProductById = async (req, res) => {
     return await getEntityById(req, res, ProductRepository);
 }
 
-const getPriceCategoriesOfClient = async (req, res) => {
-    const id = req.params.id;
-    const client_id = req.params.client_id;
-
-    try {
-        if (id) {
-            let price_categories_of_client = await ProductRepository.getProductPriceCategoriesOfClient(id, client_id);
-            if (price_categories_of_client === null) {
-                res.status(404).json({});
-            }
-            else {
-                res.json(price_categories_of_client);
-            }
-        }
-        else {
-            res.status(404).json({});
-        }
-    }
-    catch (err) {
-        res.status(500).json({ success: 'no', msg: err.sqlMessage });
-    }
-}
-
 const getPriceCategories = async (req, res) => {
     const id = req.params.id;
 
@@ -138,7 +115,7 @@ module.exports = {
     addProduct,
     updateProduct,
     getPriceCategories,
-    getPriceCategoriesOfClient,
+    /*getPriceCategories,*/
     assignPCategoryToProduct,
     unassignPCategoryFromProduct
 };

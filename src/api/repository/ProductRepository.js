@@ -61,7 +61,7 @@ class ProductRepository extends BaseRepository {
 
     /**
      * 
-     * @param {int} id : the product id
+     * @param {int} product_id : the product id
      * 
      * Description: This method is used to get a list of product's prices according to the price categories.
      */
@@ -73,12 +73,11 @@ class ProductRepository extends BaseRepository {
                             pc.id AS price_category_id,
                             pc.name AS price_category_name, 
                             pc.price AS price_category_price,
-                            'product_category_price' AS pricing_type
                         FROM price_categories AS pc
                         INNER JOIN products_price_categories AS ppc ON ppc.price_category_id = pc.id
                         INNER JOIN products ON ppc.product_id = products.id
                         WHERE products.id = ?;`;
-
+            //'product_category_price' AS pricing_type
             let values = [product_id];
 
             let results = await pool.query(sql, values);

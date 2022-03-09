@@ -58,25 +58,29 @@ class ClientRepository extends BaseRepository {
     }
 
     /**
-    * 
-    * @param {int} id : the client id
-    * @param {int} product_id : the product id
-    * 
-    * Description: This method returns a client's price of a product.
-    */
-    static getProductPrice = async (id, product_id) => {
+     * 
+     * @param {int} client_id : the client id
+     * @param {int} price_categroy_id : the price category id
+     * 
+     * Description: This method is used to get a list of price categories pirces dedicated to a spcecific.
+     */
+     static getPriceCategories = async (client_id) => {
+
         try {
-            let sql = `SELECT clients.full_name AS client_full_name, 
-                                products.name AS product_name,
-                                pcp.price AS client_price
-                        FROM clients
-                        INNER JOIN products_clients_prices AS pcp ON pcp.client_id = clients.id
-                        INNER JOIN products ON pcp.product_id = products.id
-                        WHERE pcp.product_id = ? && pcp.client_id = ?;`;
+            let sql = `SELECT  
+                            clients.full_name AS client_fullname,
+                            pc.id AS price_category_id,                            
+                            pc.name AS price_category_name, 
+                            pc.price AS price_category_price,  
+                            cpc.price AS client_price_category_price                                                     
+                        FROM price_categories AS pc
+                        INNER JOIN clients_price_categories AS cpc ON pc.id = cpc.price_category_id
+                        INNER JOIN clients ON cpc.client_id = clients.id                        
+                        WHERE clients.id = ?;`;
 
-            let values = [product_id, id];
+            let values = [client_id];
 
-            let results = await pool.query(sql, values);            
+            let results = await pool.query(sql, values);
 
             if (results.length > 0) {
                 return results;
@@ -85,27 +89,27 @@ class ClientRepository extends BaseRepository {
                 return null;
             }
         }
+        catch (err) {            
+            throw err;
+        }
+    }
+
+    static assignCategoryPrice = async (id, pcategory_id, price) => {
+        try {
+            let flated = flatObject({ price_category_id: pcategory_id, client_id: id, price: price });
+
+            return await super.add('clients_price_categories', flated);
+        }
         catch (err) {
             throw err;
         }
     }
 
-    static assignProductPrice = async (id, product_id, price) => {
+    static unassignCategoryPrice = async (id, pcategory_id) => {
         try {
-            let flated = flatObject({ product_id: product_id, client_id: id, price: price });
-
-            return await super.add('products_clients_prices', flated);
-        }
-        catch (err) {
-            throw err;
-        }
-    }
-
-    static unassignProductPrice = async (id, product_id) => {
-        try {
-            let sql = `DELETE FROM products_clients_prices WHERE client_id =? AND product_id = ?`;
-
-            let values = [id, product_id];
+            let sql = `DELETE FROM clients_price_categories WHERE client_id = ? AND price_category_id =?`;
+            
+            let values = [id, pcategory_id];
 
             let result = await pool.query(sql, values);
 

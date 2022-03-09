@@ -1,5 +1,6 @@
 const BaseRepository = require('./BaseRepository');
 const { flatObject } = require('../helpers/utilities');
+const pool = require('../helpers/mysql');
 
 class PCategoryRepository extends BaseRepository {
     static add = async (pcategory) => {
@@ -54,6 +55,27 @@ class PCategoryRepository extends BaseRepository {
             }
             else {
                 return null;
+            }
+        }
+        catch (err) {
+            throw err;
+        }
+    }
+
+
+    static delete = async (id) => {
+        try {
+            let sql = `DELETE FROM price_categories WHERE id = ?;`;
+            
+            let values = [id];
+
+            let result = await pool.query(sql, values);
+
+            if (result.affectedRows > 0) {
+                return true;
+            }
+            else {
+                return false;
             }
         }
         catch (err) {

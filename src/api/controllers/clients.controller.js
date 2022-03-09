@@ -5,7 +5,7 @@
  * @author Husam Burhan
  *
  * Created at     : 2022-01-22 22:24:46 
- * Last modified  : 2022-02-06 23:05:19
+ * Last modified  : 2022-03-09 07:39:41
  */
 
 
@@ -38,14 +38,14 @@ const updateClient = async (req, res) => {
         { "1062": "The name or email you specified is duplicated" });
 }
 
-const assignProductPriceToClient = async (req, res) => {
+const assignPCategoryToClient = async (req, res) => {
     const id = req.params.id;
-    const product_id = req.params.product_id;
+    const pcategory_id = req.params.pcategory_id;
     const price = req.params.price;
 
     try {
-        if (id && product_id && price) {
-            let result = await ClientRepository.assignProductPrice(id, product_id, price);
+        if (id && pcategory_id && price) {
+            let result = await ClientRepository.assignCategoryPrice(id, pcategory_id, price);
 
             if (result || result === 0) {
                 res.json({ success: 'yes', msg: 'assignment succeeded' });
@@ -63,13 +63,13 @@ const assignProductPriceToClient = async (req, res) => {
     }
 }
 
-const unassignProductPriceFromClient = async (req, res) => {
+const unassignPCategoryFromClient = async (req, res) => {
     const id = req.params.id;
-    const product_id = req.params.product_id;
+    const pcategory_id = req.params.pcategory_id;
 
     try {
-        if (id && product_id) {
-            let result = await ClientRepository.unassignProductPrice(id, product_id);
+        if (id && pcategory_id) {
+            let result = await ClientRepository.unassignCategoryPrice(id, pcategory_id);
 
             if (result) {
                 res.json({ success: 'yes', msg: 'unassignment succeeded' });
@@ -87,19 +87,18 @@ const unassignProductPriceFromClient = async (req, res) => {
     }
 }
 
-const getProductPriceOfClient = async (req, res) => {
+
+const getPriceCategories = async (req, res) => {
     const id = req.params.id;
-    const product_id = req.params.product_id;
-
+    
     try {
-        if (id && product_id) {
-            let result = await ClientRepository.getProductPrice(id, product_id);
-
-            if (result === null) {
+        if (id) {
+            let price_categories_of_client = await ClientRepository.getPriceCategories(id);
+            if (price_categories_of_client === null) {
                 res.status(404).json({});
             }
             else {
-                res.json(result);
+                res.json(price_categories_of_client);
             }
         }
         else {
@@ -111,13 +110,12 @@ const getProductPriceOfClient = async (req, res) => {
     }
 }
 
-
 module.exports = {
     getClients,
     getClientById,
     addClient,
     updateClient,
-    getProductPriceOfClient,
-    assignProductPriceToClient,
-    unassignProductPriceFromClient
+    getPriceCategories,
+    assignPCategoryToClient,
+    unassignPCategoryFromClient
 };

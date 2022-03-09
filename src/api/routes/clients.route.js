@@ -1,6 +1,6 @@
 const {validateUpdateClient, validateAddClient} = require('../validators/clients.validator');
 
-const {getClients, getClientById, addClient, updateClient,getProductPriceOfClient, assignProductPriceToClient, unassignProductPriceFromClient} = require('../controllers/clients.controller');
+const {getClients, getClientById, addClient, updateClient,getPriceCategories, assignPCategoryToClient, unassignPCategoryFromClient} = require('../controllers/clients.controller');
 const express = require('express');
 const router = express.Router();
 
@@ -8,9 +8,9 @@ router.get('/', getClients);
 router.post('/',validateAddClient, addClient);
 router.put('/', validateUpdateClient, updateClient);
 router.get('/:id', getClientById);
-router.get('/:id/product/:product_id', getProductPriceOfClient);
-router.link('/:id/product/:product_id/:price', assignProductPriceToClient);
-router.unlink('/:id/product/:product_id', unassignProductPriceFromClient);
+router.get('/:id/price-categories', getPriceCategories);
+router.link('/:id/price-category/:pcategory_id/price/:price', assignPCategoryToClient);
+router.unlink('/:id/price-category/:pcategory_id', unassignPCategoryFromClient);
 
 
 //router.route('/').get(getClients).post(addClient).put(updateClient);

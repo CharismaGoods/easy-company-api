@@ -15,7 +15,7 @@ const addPriceCategory = async (req, res) => {
     return await addEntity(res,
         PCategoryRepository,
         pcategory,
-        { "1062": "TThe name you specified is duplicated" });
+        { "1062": "The name you specified is duplicated" });
 }
 
 const updatePriceCategory = async (req, res) => {
@@ -24,7 +24,42 @@ const updatePriceCategory = async (req, res) => {
     return await updateEntity(res,
         PCategoryRepository,
         pcategory,
-        { "1062": "TThe name you specified is duplicated" });
+        { "1062": "The name you specified is duplicated" });
 }
 
-module.exports = { getPriceCategories, getPriceCategoryById, addPriceCategory, updatePriceCategory };
+const deletePriceCategory = async (req, res) => {
+    let id = req.params.id;
+
+    try {
+        if (id) {
+            let result = await PCategoryRepository.delete(id);
+
+            if (result) {
+                res.json({ success: 'yes', msg: 'price category deleted' });
+            }
+            else {
+                res.status(500).json({ success: 'no', msg: 'could not delete this price category.' });
+            }
+        }
+        else {
+            res.status(404).json({});
+        }
+    }
+    catch (err) {
+        if(err.errno === 1451){
+            res.status(500).json({ success: 'no', msg: 'The specified price category has a relation between a product(s) or/and a client(s)' });
+        }
+        else{
+            res.status(500).json({ success: 'no', msg: err.sqlMessage });
+        }
+    }
+    
+}
+
+module.exports = {
+    getPriceCategories,
+    getPriceCategoryById,
+    addPriceCategory,
+    updatePriceCategory,
+    deletePriceCategory
+};
