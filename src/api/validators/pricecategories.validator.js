@@ -1,18 +1,18 @@
 const validateAddPCategory = (req, res, next) => {
-    let { name } = req.body;
+    let { name, price } = req.body;
 
     try {
-        if (typeof name === "undefined") {
-            res.status(422).json({ success: 'no', msg: 'name field is missing' });
+        if (typeof name === "undefined" || typeof price === "undefined") {
+            res.status(422).json({ success: 'no', msg: 'name and/or price fields are missing' });
             return;
         }
 
-        if (name === '' || name === null) {
-            res.status(422).json({ success: 'no', msg: 'name field is empty' });
+        if (name === '' || name === null || price === '' || price === null) {
+            res.status(422).json({ success: 'no', msg: 'name and/or fields are empty' });
             return;
         }
 
-        req.pcategory = {name: name};
+        req.pcategory = {name: name, price: price};
     
         next();
     }

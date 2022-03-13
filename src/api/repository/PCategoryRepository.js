@@ -6,7 +6,7 @@ class PCategoryRepository extends BaseRepository {
     static add = async (pcategory) => {
         try {
             let flated = flatObject(pcategory);
-
+            
             return await super.add('price_categories', flated);
         }
         catch (err) {

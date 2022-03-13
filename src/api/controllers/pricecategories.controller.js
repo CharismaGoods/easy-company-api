@@ -12,6 +12,8 @@ const getPriceCategoryById = async (req, res) => {
 const addPriceCategory = async (req, res) => {
     let pcategory = req.pcategory;
 
+    console.log(pcategory);
+    
     return await addEntity(res,
         PCategoryRepository,
         pcategory,
