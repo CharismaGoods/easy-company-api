@@ -49,7 +49,7 @@ const deletePriceCategory = async (req, res) => {
     }
     catch (err) {
         if(err.errno === 1451){
-            res.status(500).json({ success: 'no', msg: 'The specified price category has a relation between a product(s) or/and a client(s)' });
+            res.status(500).json({ success: 'no', msg: 'The specified price category has a relation with a product(s) or/and a client(s)' });
         }
         else{
             res.status(500).json({ success: 'no', msg: err.sqlMessage });

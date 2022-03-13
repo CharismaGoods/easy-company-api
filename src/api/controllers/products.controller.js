@@ -109,6 +109,34 @@ const unassignPCategoryFromProduct = async (req, res) => {
     }
 }
 
+const deleteProduct = async(req, res) => {
+    const id = req.params.id;
+
+    try {
+        if (id) {
+            let result = await ProductRepository.delete(id);
+
+            if (result) {
+                res.json({ success: 'yes', msg: 'product deleted' });
+            }
+            else {
+                res.status(500).json({ success: 'no', msg: 'could not delete this product.' });
+            }
+        }
+        else {
+            res.status(404).json({});
+        }
+    }
+    catch (err) {
+        if(err.errno === 1451){
+            res.status(500).json({ success: 'no', msg: 'The specified product has a relation with another enitity(s)' });
+        }
+        else{
+            res.status(500).json({ success: 'no', msg: err.sqlMessage });
+        }
+    }
+}
+
 module.exports = {
     getProducts,
     getProductById,
@@ -117,5 +145,6 @@ module.exports = {
     getPriceCategories,
     /*getPriceCategories,*/
     assignPCategoryToProduct,
-    unassignPCategoryFromProduct
+    unassignPCategoryFromProduct,
+    deleteProduct
 };
