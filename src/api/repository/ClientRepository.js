@@ -124,6 +124,26 @@ class ClientRepository extends BaseRepository {
             throw err;
         }
     }
+
+    static delete = async (id) => {
+        try {
+            let sql = `DELETE FROM clients WHERE id = ?;`;
+            
+            let values = [id];
+
+            let result = await pool.query(sql, values);
+
+            if (result.affectedRows > 0) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        catch (err) {
+            throw err;
+        }
+    }
 }
 
 module.exports = ClientRepository;

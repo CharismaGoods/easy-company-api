@@ -5,7 +5,7 @@
  * @author Husam Burhan
  *
  * Created at     : 2022-01-22 22:24:46 
- * Last modified  : 2022-03-09 07:39:41
+ * Last modified  : 2022-03-15 10:35:31
  */
 
 
@@ -110,6 +110,34 @@ const getPriceCategories = async (req, res) => {
     }
 }
 
+const deleteClient = async (req, res) => {
+    let id = req.params.id;
+
+    try {
+        if (id) {
+            let result = await ClientRepository.delete(id);
+
+            if (result) {
+                res.json({ success: 'yes', msg: 'client deleted' });
+            }
+            else {
+                res.status(500).json({ success: 'no', msg: 'could not delete this client.' });
+            }
+        }
+        else {
+            res.status(404).json({});
+        }
+    }
+    catch (err) {
+        if(err.errno === 1451){
+            res.status(500).json({ success: 'no', msg: 'The specified client has a relation with other entities.' });
+        }
+        else{
+            res.status(500).json({ success: 'no', msg: err.sqlMessage });
+        }
+    }
+}
+
 module.exports = {
     getClients,
     getClientById,
@@ -117,5 +145,6 @@ module.exports = {
     updateClient,
     getPriceCategories,
     assignPCategoryToClient,
-    unassignPCategoryFromClient
+    unassignPCategoryFromClient,
+    deleteClient
 };
