@@ -72,7 +72,7 @@ class ProductRepository extends BaseRepository {
                             products.name AS product_name,
                             pc.id AS price_category_id,
                             pc.name AS price_category_name, 
-                            pc.price AS price_category_price,
+                            pc.price AS price_category_price
                         FROM price_categories AS pc
                         INNER JOIN products_price_categories AS ppc ON ppc.price_category_id = pc.id
                         INNER JOIN products ON ppc.product_id = products.id
