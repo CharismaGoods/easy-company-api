@@ -36,13 +36,13 @@ async function getEntities(req, res, repository) {
         let entities = await repository.find(name);
 
         if (entities === null) {
-            res.status(404).json({});
+            res.status(404).json([]);
         }
-        else if (entities.length === 1) {
-            res.json(entities[0]);
+        else if(entities.length > 0){
+            res.status(200).json(entities);
         }
-        else if (entities.length > 1) {
-            res.json(entities)
+        else{
+            res.status(404).json([]);
         }
     }
     catch (err) {
@@ -84,7 +84,7 @@ async function updateEntity(res, repository, entity, error_msgs) {
 
 async function addUpdateErrorManipulation(res, errObj, error_msgs) {
     let err_msg = '';
-    
+
     if (errObj.errno) {
         if (errObj.errno === 1452) {
             //Forign-key violation

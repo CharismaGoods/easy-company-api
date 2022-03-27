@@ -2,7 +2,15 @@ const { getEntityById, getEntities, addEntity, updateEntity } = require('../help
 const ProductRepository = require('../repository/ProductRepository');
 
 const getProducts = async (req, res) => {
-    return await getEntities(req, res, ProductRepository);
+    //return await getEntities(req, res, ProductRepository);
+    try{
+        result = await ProductRepository.getAll();
+
+        return res.status(200).json(result);
+    }
+    catch(err){
+        res.sendStatus(500);
+    }
 }
 
 const getProductById = async (req, res) => {
@@ -16,15 +24,15 @@ const getPriceCategories = async (req, res) => {
         if (id) {
             let price_categories = await ProductRepository.getProductPriceCategories(id);
 
-            if (price_categories === null) {
-                res.status(404).json({});
+            if (price_categories.length === 0) {
+                res.status(404).json([]);
             }
             else {
-                res.json(price_categories);
+                res.status(200).json(price_categories);
             }
         }
         else {
-            res.status(404).json({});
+            res.status(404).json([]);
         }
     }
     catch (err) {
@@ -53,7 +61,7 @@ const addProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
     let product = req.product;
-
+    
     return await updateEntity(res,
         ProductRepository,
         product,

@@ -86,7 +86,7 @@ class ProductRepository extends BaseRepository {
                 return results;
             }
             else {
-                return null;
+                return [];
             }
         }
         catch (err) {
@@ -139,6 +139,21 @@ class ProductRepository extends BaseRepository {
             else {
                 return false;
             }
+        }
+        catch (err) {
+            throw err;
+        }
+    }
+
+    static getAll = async () => {
+        try {
+            let sql = `SELECT products.*, categories.name AS category_name 
+                FROM products 
+                INNER JOIN categories ON categories.id = products.category_id;`;
+
+            let result = await pool.query(sql);
+
+            return result;
         }
         catch (err) {
             throw err;
